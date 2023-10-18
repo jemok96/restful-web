@@ -1,0 +1,6 @@
+spring:
+  message:
+    basename: messages
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
