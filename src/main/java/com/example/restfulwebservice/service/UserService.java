@@ -9,9 +9,9 @@ import java.util.Iterator;
 import java.util.List;
 @Service
 public class UserService {
-    private static List<User> users = new ArrayList();
+    private static List<User> users = new ArrayList<>();
     private static int userCount =3;
-    static {
+     static {
         users.add(new User(1,"Jemok",new Date(),"pass1" ,"701010-1111111") );
         users.add(new User(2,"Alice",new Date() ,"pass2" ,"605010-100100"));
         users.add(new User(3,"Elena",new Date() ,"pass3" ,"505050-111111"));

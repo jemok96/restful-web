@@ -17,6 +17,11 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+/**
+ * Version 관리
+ * URI Versionong(V1,V2), Request Parameter versioning(V3) : 일반 브라우저에서 실행 가능
+ * Headers versioning(V4) : 일반 브라우저에서 실행 불가 => Postman사용
+ */
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -25,33 +30,28 @@ public class AdminController {
     public AdminController(UserService userService) {
         this.userService = userService;
     }
+
+    /**
+     * Controller에서  Filter사용해서  JSON을 제어하는 방법
+     * "UserInfo" : Dto or Entity  @JsonFilter("UserInfo")
+     * filterOutAllExcept : 보여줄 value
+     */
     @GetMapping("/users")
     public MappingJacksonValue retrieveAllUsers(){
         List<User> users = userService.findAll();
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter
-                .filterOutAllExcept("id","name","joinDate","ssn");
 
-        FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfo",filter);
-
-        MappingJacksonValue mapping = new MappingJacksonValue(users);
-        mapping.setFilters(filters);
-        return mapping;
+        return UtilMethod.getMappingJacksonValue(users,"UserInfo","id","name","joinDate");
     }
-    //@JsonFilter("UserInfo") 이거 사용해서 제어하는 법
+
+
     @GetMapping("/v1/users/{id}")
     public MappingJacksonValue findOneUserV1(@PathVariable("id")Integer id){
         User user = userService.findOne(id);
         if(user == null){
             throw new UserNotFoundException("user not found");
         }
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter
-                .filterOutAllExcept("id","name","joinDate","ssn");
 
-        FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfo",filter);
-
-        MappingJacksonValue mapping = new MappingJacksonValue(user);
-        mapping.setFilters(filters);
-        return mapping;
+        return UtilMethod.getMappingJacksonValueUser(user,"UserInfo","id","name","joinDate","ssn");
     }
 
     @GetMapping("/v2/users/{id}")
@@ -61,20 +61,16 @@ public class AdminController {
             throw new UserNotFoundException("user not found");
         }
         //User -> User2
-        UserV2 userV2 = new UserV2();
-        BeanUtils.copyProperties(user,userV2);
-        userV2.setGrade("VIP");
+        UserV2 userV2 = getUserV2(user);
 
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter
-                .filterOutAllExcept("id","name","joinDate","grade");
-
-        FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfoV2",filter);
-
-        MappingJacksonValue mapping = new MappingJacksonValue(userV2);
-        mapping.setFilters(filters);
-        return mapping;
+        return UtilMethod.getMappingJacksonValueUser(userV2,"UserInfoV2","id","name","joinDate","ssn","grade");
     }
-    //http://localhost:8080/admin/users/1/?version=3
+
+
+    /**
+     * Request Parameter를 통한 Version 관리
+     * http://localhost:8080/admin/users/1/?version=3
+     */
     @GetMapping(value = "/users/{id}/",params = "version=3")
     public MappingJacksonValue findOneUserV3(@PathVariable("id")Integer id){
         User user = userService.findOne(id);
@@ -82,38 +78,33 @@ public class AdminController {
             throw new UserNotFoundException("user not found");
         }
         //User -> User2
-        UserV2 userV2 = new UserV2();
-        BeanUtils.copyProperties(user,userV2);
-        userV2.setGrade("VIP");
-
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter
-                .filterOutAllExcept("id","name","joinDate","grade");
-
-        FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfoV2",filter);
-
-        MappingJacksonValue mapping = new MappingJacksonValue(userV2);
-        mapping.setFilters(filters);
-        return mapping;
+        UserV2 userV2 = getUserV2(user);
+        return UtilMethod.getMappingJacksonValueUser(userV2,"UserInfoV2","id","name","joinDate","grade");
     }
-    @GetMapping(value = "/users/{id}ss",headers = "X-API-VERSION=4")
+
+    /**
+     * Headers를 통한 Version 관리
+     * ~/admin/users/1
+     * PostMan에서 Key = X-API-VERSION, Value = 4
+     */
+    @GetMapping(value = "/users/{id}",headers = "X-API-VERSION=4")
     public MappingJacksonValue findOneUserV4(@PathVariable("id")Integer id){
         User user = userService.findOne(id);
         if(user == null){
             throw new UserNotFoundException("user not found");
         }
         //User -> User2
+        UserV2 userV2 = getUserV2(user);
+
+        return UtilMethod.getMappingJacksonValueUser(userV2,"UserInfoV2","id","name","joinDate","grade");
+    }
+
+    private static UserV2 getUserV2(User user) {
         UserV2 userV2 = new UserV2();
         BeanUtils.copyProperties(user,userV2);
         userV2.setGrade("VIP");
-
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter
-                .filterOutAllExcept("id","name","joinDate","grade");
-
-        FilterProvider filters = new SimpleFilterProvider().addFilter("UserInfoV2",filter);
-
-        MappingJacksonValue mapping = new MappingJacksonValue(userV2);
-        mapping.setFilters(filters);
-        return mapping;
+        return userV2;
     }
+
 
 }

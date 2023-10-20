@@ -27,12 +27,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // XML형태로 반환할 경우 필요한 의존  application/xml
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.2'
 
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-hateoas
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
     // https://mvnrepository.com/artifact/io.springfox/springfox-boot-starter
+    // Swagger 사용
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
 
 

@@ -1,5 +1,6 @@
 package com.example.restfulwebservice.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.util.Date;
 
+@Slf4j
 @RestController
 @ControllerAdvice
 //위 2개 합친게 @RestControllerAdvice
@@ -25,6 +27,7 @@ public class CustmizeExceptionHandler extends ResponseEntityExceptionHandler {
     }
     @ExceptionHandler(UserNotFoundException.class)
     public final ResponseEntity<Object> handleUserNotFoundExceptions(Exception ex, WebRequest request){
+        log.info("request.getDescription(false) = {}",request.getDescription(false));
         ExceptionResponse exceptionResponse =
                 new ExceptionResponse(new Date(),ex.getMessage(),request.getDescription(false));
 
@@ -39,5 +42,6 @@ public class CustmizeExceptionHandler extends ResponseEntityExceptionHandler {
         ExceptionResponse exceptionResponse = new ExceptionResponse(new Date()
         ,"Validation failed",ex.getBindingResult().toString());
         return new ResponseEntity(exceptionResponse,HttpStatus.BAD_REQUEST);
+
     }
 }
