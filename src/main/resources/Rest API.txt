@@ -1,0 +1,64 @@
+RESTful하다는, REST를 잘 지킨것이고, REST API는 REST형식으로 설계된 API를 말합니다.
+따라서, RESTful API란 REST한 방식으로 프로그램간 정보 교환 등의 상호작용을 가능하게 하는 것이 RESTful API이다.
+
+자원을 이름(자원의 표현)으로 구분하여 해당 자원의 상태(정보)를 주고 받는 모든 것을 의미한다.
+즉, 자원(resource)의 표현(representation) 에 의한 상태 전달
+자원(Resource) : 모든 자원은 고유한 URI로 식별
+행위(Verb) : HTTP Method(GET, POST, PUT, DELETE)를 이용해 자원에 대한 행위 정의
+표현(Representations) : 클라이언트는 서버로부터 받은 자원을 표현을 통해 처리
+
+
+
+REST API 특징
+몇개는 그냥 HTTP를 사용만해도 만족시켜짐, 즉 REST만이 갖는 특징을 사용해야 REST하다고 할 수 있음
+1. Server-Client(서버-클라이언트 구조)
+ 자원이 있는 쪽이 Server, 자원을 요청하는 쪽이 Client가 된다. HTTP를 사용하면 자동적으로 지켜짐
+
+2.Stateless(무상태)
+ HTTP 프로토콜은 Stateless Protocol이므로  HTTP를 이용하는 것 만으로 REST 역시 무상태성을 갖는다.
+  그리고 이는 REST API를 제공해주는 서버는 세션을 해당 서버 쪽에 유지하지 않는다는 의미  => 토큰,OAuth 2.0
+ Server는 각각의 요청을 완전히 별개의 것으로 인식하고 처리한다.
+
+3. Cacheable(캐시 처리 가능)
+ 웹 표준 HTTP 프로토콜을 그대로 사용하므로 웹에서 사용하는 기존의 인프라를 그대로 활용할 수 있다.
+  즉, HTTP가 가진 가장 강력한 특징 중 하나인 캐싱 기능을 적용할 수 있다.
+
+4. Uniform-Interface
+  각각의 자원들이 url자원식별, 표현을통한 자원조작, Self-descriptive messages, HATEOAS 구조를 가지는 것을 말함
+
+- url자원식별 : 자원은 url로 식별되어야 한다.
+
+- 표현을 통한 자원조작 : HTTP 표준 메서드(GET,POST,DELETE)를 통해 자원을 조회,삭제,수정 해야한다.
+
+- Self-descriptive messages : HTTP Header에 타입을 명시하고 각 메시지들은 MIME types에 맞춰 표현되어야 한다.
+
+ 예를 들어 json을 반환한다고 하면(응답) 헤더에 Content-Yype:application/json으로 명시해줘야 한다
+  MIME types는 문서,파일 등의 특성과 형식을 나타내는 표준
+
+5.계층 구조
+ 계층구조로 나눠져 있는 아키텍처를 뜻한다. WEB기반 서비스를 하면 보통 계층구조를 이룬다.
+
+-HATEOAS
+ 현재 리소스와 연관된(호출 가능한) 자원 상태 정보를 제공
+ 보통 href,links,link,url 속성 중 하나에 해당 데이터의 URL을 담아서 표기해야한다.
+ex) {"id":1,"title":"자바","author":"제목","links":[{"href":"/books/1" }]} ,
+서비스가 커지면 자원을 나타내는 url이 여러개일 수 있어서 배열로
+
+Richardson Maturity Model에서
+제일 윗 단계 LEVEL3가  HATEOAS를 적용한 모델임
+
+
+
+
+REST API의 URL 규칙
+1.동작은 HTTP메소드로만 해야 하고 url에 해당 내용일 들어가면 안됨, 수정=put, 삭제=delete등을 이용
+/books/delete/1 이렇게 표기하면 안된다는 것
+2. .jpg, .png등 확장자는 표시 하지 말아야 한다. Accept header를 사용해라
+3. 동사가 아닌 명사로만 표기해야한다.
+4. 계층적인 내용을 담고 있어야한다.  /users/{userid}/books/{bookid}   슬래시 구분자가 계층 관계를 나타내는데 사용 됨
+5. 소문자로만 사용하고 너무 길게 써야할 경우 언더바(_)가 아닌 그냥 바(-)를 사용
+6. HTTP 응답 상태코드를 적재적소에 활용해야한다. 성공200. 리다이렉트 301등
+
+REST API는 /를 기반으로 구축되지만 적절히 쿼리 스트링을 혼재해서 사용한다
+검색,정렬,페이징 등 매개변수가 많거나 복잡할 경우
+
