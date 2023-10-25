@@ -4,13 +4,12 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter @Setter
 @NoArgsConstructor
@@ -18,7 +17,11 @@ import java.util.Date;
 @ApiModel(description = "All details about user.")
 public class Usertable {
     @Id @GeneratedValue
+    @Column(name = "USERTABLE_ID")
     private Integer id;
+
+    @OneToMany(mappedBy = "user")
+    List<Post> posts= new ArrayList<>();
 
     @Size(min = 2, message = "이름은 2글자 이상 입력해 주세요.")
     @ApiModelProperty(notes = "사용자 이름을 입력해 주세요")
